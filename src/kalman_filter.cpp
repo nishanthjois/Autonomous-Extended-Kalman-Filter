@@ -2,6 +2,7 @@
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+using namespace std;
 
 KalmanFilter::KalmanFilter() {}
 
@@ -69,6 +70,22 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
   //VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
+
+ bool in_pi = false;
+    while (in_pi == false) {
+      if (y(1) > 3.14159) {
+        //cout << "phi > pi" << endl;
+        y(1) = y(1) - 6.2831;
+      }
+      else if (y(1) < -3.14159) {
+        //cout << "phi < -pi" << endl;
+        y(1) = y(1) + 6.2831;
+      } else {
+        in_pi = true;
+      }
+    }
+   // cout << "y: " << y << endl;
+
   MatrixXd Ht = H_.transpose();       // Hj_ this is jacobian
   MatrixXd PHt = P_ * Ht;
   MatrixXd S = H_ * PHt + R_;
